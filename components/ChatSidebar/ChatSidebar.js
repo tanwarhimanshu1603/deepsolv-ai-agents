@@ -1,4 +1,4 @@
-import { faMessage, faPlus, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faAnchorCircleCheck, faLightbulb, faMessage, faPlus, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -29,6 +29,8 @@ export const ChatSidebar = ({chatId}) => {
                 ))
             }
         </div>
+        <Link href='http://34.42.153.11:8000/#form' className="side-menu-item bg-emerald-500 hover:bg-emerald-600"><FontAwesomeIcon icon={faLightbulb} />DeepAgent</Link>
+        {/* <Link href='http://34.42.153.11:8000/#form' className="side-menu-item bg-emerald-500">DeepAgent</Link> */}
         <Link href='/api/auth/logout' className="side-menu-item hover:bg-emerald-500"><FontAwesomeIcon icon={faRightFromBracket} /> Logout</Link>
     </div>
 }

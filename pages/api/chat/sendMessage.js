@@ -10,7 +10,7 @@ export default async function handler(req){
         let chatId = chatIdFromParam;
         const initialMessage = {
             role: "system",
-            content: "Your name is Himanshu and you are a Deepsolv AI Chatbot who is a customer support service agent."
+            content: ""
         }
 
         let newChatId = null;

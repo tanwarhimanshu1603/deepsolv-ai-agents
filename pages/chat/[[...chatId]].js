@@ -101,7 +101,7 @@ export default function ChatPage({chatId,title, messages = []}){
                 <ChatSidebar chatId={chatId} />
                 <div className="bg-gray-700 flex flex-col overflow-hidden">
                     <div className="flex-1 text-white overflow-scroll no-scrollbar">
-                        {allMessages.map(message => (
+                        {allMessages.length === 0 ? <Message role='assistant' content='Hello there, How can I assisst you today?' /> : allMessages.map(message => (
                             <Message key={message._id} role={message.role} content={message.content} />
                         ))}
                         {
@@ -111,7 +111,7 @@ export default function ChatPage({chatId,title, messages = []}){
                     <footer className="bg-gray-800 p-10">
                         <form onSubmit={handleSubmit}>
                             <fieldset disabled={generatingResponse} className="flex gap-2">
-                                <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} className="w-full resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-400 focus:bg-gray-600 focus:outline focus:outline-emerald-500" placeholder={`${generatingResponse ? "Generating response..." : "Send a message..."}`}/>
+                                <textarea value={messageText} onChange={(e) => setMessageText(e.target.value)} className="w-full h-[50px] resize-none rounded-md bg-gray-700 p-2 text-white focus:border-emerald-400 focus:bg-gray-600 focus:outline focus:outline-emerald-500" placeholder={`${generatingResponse ? "Generating response..." : "Send a message..."}`}/>
                                 <button type="submit" className="btn">Submit</button>
                             </fieldset>
                         </form>

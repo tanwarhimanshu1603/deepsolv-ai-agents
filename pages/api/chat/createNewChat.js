@@ -10,8 +10,8 @@ export default async function handler(req,res){
             content: message,
         }
         const client = await clientPromise;
-        const db = client.db("DeepsolvChatbots");
-        const chatgptConversation = await db.collection("ChatgptConversations").insertOne({
+        const db = client.db();
+        const chatgptConversation = await db.collection("DeepChat").insertOne({
             userId: user.sub,
             messages: [newUserMessage],
             title: message

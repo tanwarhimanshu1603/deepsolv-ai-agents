@@ -6,10 +6,10 @@ export default async function handler(req,res){
     try {
         const {user} = await getSession(req,res);
         const client = await clientPromise;
-        const db = client.db("DeepsolvChatbots");
+        const db = client.db();
 
         const {chatId,role,content} = req.body;
-        const chatgptConversation = await db.collection("ChatgptConversations").findOneAndUpdate({
+        const chatgptConversation = await db.collection("DeepChat").findOneAndUpdate({
             _id: new ObjectId(chatId),
             userId: user.sub
         },{

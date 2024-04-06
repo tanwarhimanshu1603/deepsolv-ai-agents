@@ -127,8 +127,8 @@ export const getServerSideProps = async (context) => {
     if(chatId){
         const {user} = await getSession(context.req,context.res);
         const client = await clientPromise;
-        const db = client.db("DeepsolvChatbots");
-        const chatgptConversation = await db.collection("ChatgptConversations").findOne({
+        const db = client.db();
+        const chatgptConversation = await db.collection("DeepChat").findOne({
             userId: user.sub,
             _id: new ObjectId(chatId)
         })

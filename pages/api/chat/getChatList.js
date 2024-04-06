@@ -3,10 +3,13 @@ import clientPromise from "lib/mongodb";
 
 export default async function handler(req,res){
     try {
+        // console.log("starting in try");
         const {user} = await getSession(req,res);
+        // console.log("getting user session",user);
         const client = await clientPromise;
-        const db = client.db("DeepsolvChatbots");
-        const chatgptConversation = await db.collection("ChatgptConversations").find({
+        // console.log("Client: ",client);
+        const db = client.db();
+        const chatgptConversation = await db.collection("DeepChat").find({
             userId: user.sub
         },{
             projection: {

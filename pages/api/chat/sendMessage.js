@@ -51,7 +51,7 @@ export default async function handler(req){
 
         const messagesToInlcude = [];         // This will finally be sent to openai to know about conversation history
         chatMessages.reverse();
-        console.log("chat messages: ", chatMessages);
+        // console.log("chat messages: ", chatMessages);
         let usedTokens = 0;
         for(let chatMessage of chatMessages){
             const messageTokens = chatMessage.content.length/4;
@@ -62,7 +62,7 @@ export default async function handler(req){
         }
 
         messagesToInlcude.reverse();
-        console.log("message to include: ",messagesToInlcude);
+        // console.log("message to include: ",messagesToInlcude);
 
         const stream = await OpenAIEdgeStream('https://api.openai.com/v1/chat/completions',{
             headers: {

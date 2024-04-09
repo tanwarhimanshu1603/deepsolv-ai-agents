@@ -1,6 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { ChatSidebar } from "components/ChatSidebar";
-import { Message } from "components/Message";
+import { ChatMessage } from "components/ChatMessage";
 import clientPromise from "lib/mongodb";
 import { ObjectId } from "mongodb";
 import Head from "next/head";
@@ -95,17 +95,17 @@ export default function ChatPage({chatId,title, messages = []}){
     return (
         <div>
             <Head>
-                <title>Chat Messages</title>
+                <title>DeepChat Messages</title>
             </Head>
             <div className="grid h-screen grid-cols-[260px_1fr]">
                 <ChatSidebar chatId={chatId} />
                 <div className="bg-gray-700 flex flex-col overflow-hidden">
                     <div className="flex-1 text-white overflow-scroll no-scrollbar">
-                        {allMessages.length === 0 ? <Message role='assistant' content='Hello there, How can I assisst you today?' /> : allMessages.map(message => (
-                            <Message key={message._id} role={message.role} content={message.content} />
+                        {allMessages.length === 0 ? <ChatMessage role='assistant' content='Hello there, How can I assisst you today?' /> : allMessages.map(message => (
+                            <ChatMessage key={message._id} role={message.role} content={message.content} />
                         ))}
                         {
-                            !!incomingMessage && <Message role='assistant' content={incomingMessage} />
+                            !!incomingMessage && <ChatMessage role='assistant' content={incomingMessage} />
                         }
                     </div>
                     <footer className="bg-gray-800 p-10">

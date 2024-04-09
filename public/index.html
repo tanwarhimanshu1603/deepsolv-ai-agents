@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>GPT Researcher</title>
+    <meta name="description" content="A research assistant powered by GPT-4">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="./static/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css"/>
+    <style>
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .agent-name {
+            text-align: center;
+        }
+
+        .agent-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .agent-choices {
+            display: none;
+        }
+
+        .btn-show {
+            display: none;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #151A2D;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidebar a {
+            padding: 5px 10px;
+            text-decoration: none;
+            font-size: 1rem;
+            text-align: start;
+            margin: 5px 20px 5px 20px;
+            color: black;
+            display: block;
+            transition: 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar a:hover {
+            color: gray;
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .sidebar .close-btn:hover {
+            color: gray;
+        }
+
+        .sidebar-heading {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-left: 60px;
+            max-width: 150px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        /* Updated styles for main content */
+        .main-content {
+            transition: margin-left 0.5s;
+            padding: 16px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidebar {padding-top: 15px;}
+            .sidebar a {font-size: 18px;}
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <p class="close-btn" onclick="closeSidebar()">&times;</p>
+    <p class="sidebar-heading btn btn-info" onclick="linktoDeepChat()">DeepChat</p>
+    <!-- Add your sidebar links here -->
+    <a class="btn btn-light" href="#" title="Research on future of India">Research on future of India</a>
+    <a class="btn btn-light" href="#" title="Research on role of ms dhoni in 2011 world cup">Research on role of ms dhoni in 2011 world cup</a>
+</div>
+
+
+
+<div class="main-content" id="main-content">
+    <button class="btn btn-secondary" id="open-sidebar" onclick="openSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+<main class="container-xl mt-4 mb-2" id="form">
+
+    <div class="agent-item"><img src="./static/defaultAgentAvatar.JPG" class="avatar"
+                                                alt="Auto Agent"></div>
+<!--    <a href="/site/indexCopy.html">Index copy</a>-->
+    <div class="margin-div">
+        <h2>Agent Output</h2>
+        <p class="mt-2 text-left" style="font-size: 0.8rem;">An agent tailored specifically to your task
+                        will be generated to provide the most precise and relevant research results.</p>
+<!--        <div id="output"></div>-->
+        <p class="d-inline-flex gap-1">
+          <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#agent-output" aria-expanded="false" aria-controls="collapseExample">
+            Click to see generated Chain of thoughts
+          </button>
+        </p>
+        <div class="collapse" id="agent-output">
+          <div class="card card-body" id="output">
+            Waiting for your input...
+        </div>
+</div>
+
+    </div>
+    <div class="margin-div">
+        <h2>Research Report</h2>
+        <div id="reportContainer">
+
+        </div>
+        <div id="reportActions">
+            <div class="alert alert-info" role="alert" id="status"></div>
+            <a id="copyToClipboard" onclick="GPTResearcher.copyToClipboard()" class="btn btn-secondary mt-3" style="margin-right: 10px;">Copy to clipboard</a>
+            <a id="downloadLink" href="#" class="btn btn-secondary mt-3" style="margin-right: 10px;" target="_blank">Download as PDF</a>
+            <a id="downloadLinkWord" href="#" class="btn btn-secondary mt-3" target="_blank">Download as Docx</a>
+        </div>
+    </div>
+
+        <form method="POST" class="mt-3" onsubmit="GPTResearcher.startResearch(); return false;">
+        <div class="form-group">
+            <label for="task" class="agent-question">What would you like me to research next?</label>
+            <input type="text" id="task" name="task" class="form-control" required>
+            <input type="radio" name="agent" id="autoAgent" value="Auto Agent" checked hidden>
+        </div>
+        <div class="form-group">
+            <div class="row">
+
+
+            </div>
+            <button type="button" id="btnShowAuto" class="btn btn-secondary mt-3 btn-show">Auto Agent</button>
+        </div>
+        <div class="form-group">
+            <label for="report_type" class="agent-question">What type of report would you like me to generate?</label>
+            <select name="report_type" class="form-control" required>
+                <option value="research_report">Summary - Short and fast (~2 min)</option>
+                <option value="detailed_report">Detailed - In depth and longer (~5 min)</option>
+                <!--<option value="resource_report">Resource Report</option>-->
+            </select>
+        </div>
+        <div class="form-group">
+</div>
+        <input type="submit" value="Research" class="btn btn-primary button-padding">
+    </form>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="./scripts.js"></script>
+<script>
+
+    function openSidebar() {
+        document.getElementById("sidebar").style.width = "250px";
+        document.getElementById("main-content").style.marginLeft = "250px";
+        document.getElementById("open-sidebar").style.display = 'none';
+    }
+
+    function closeSidebar() {
+        document.getElementById("sidebar").style.width = "0";
+        document.getElementById("main-content").style.marginLeft= "0";
+        document.getElementById("open-sidebar").style.display = 'inline-block';
+    }
+
+    function linktoDeepChat(){
+        window.location.href = "https://deepsolv-ai-agents.vercel.app/";
+    }
+
+    // const btnChoose = document.getElementById('btnChoose');
+    const btnShowAuto = document.getElementById('btnShowAuto');
+    const autoAgentDiv = document.getElementById('autoAgentDiv');
+    const agentChoices = document.getElementsByClassName('agent-choices');
+
+    /**
+    btnChoose.addEventListener('click', function () {
+        btnShowAuto.style.display = 'inline-block';
+        btnChoose.style.display = 'none';
+        autoAgentDiv.style.display = 'none';
+        agentChoices[0].style.display = 'flex';
+    });
+    **/
+
+    btnShowAuto.addEventListener('click', function () {
+        btnShowAuto.style.display = 'none';
+        btnChoose.style.display = 'inline-block';
+        autoAgentDiv.style.display = 'flex';
+        agentChoices[0].style.display = 'none';
+    });
+</script>
+</body>
+
+</html>

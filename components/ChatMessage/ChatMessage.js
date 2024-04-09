@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 
-export const Message = ({role, content}) => {
+export const ChatMessage = ({role, content}) => {
     
     const {user} = useUser();
 

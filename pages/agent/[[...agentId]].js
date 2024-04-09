@@ -18,6 +18,7 @@ export default function AgentPage({agentId,title,messages=[]}){
     const [reportType,setReportType] = useState("research_report");
     const [incomingLogs,setIncomingLogs] = useState("");
     const [report,setReport] = useState("");
+    // const [fullMessage,setFullMessage] = useState([]);
     const [newAgentMessages,setNewAgentMessages] = useState([]);
     // const [allMessages,setAllMessages] = useState([]);
     const [reportPdfPath,setReportPdfPath] = useState("");
@@ -47,14 +48,18 @@ export default function AgentPage({agentId,title,messages=[]}){
                 headers: {
                     'content-type': 'application/json'
                 },
-                body: JSON.stringify({agentId,userMessage: message,generatedLogs:incomingLogs, report: report}),
+                body: JSON.stringify({chatId: agentId,userMessage: message,generatedLogs:incomingLogs, report: report}),
             });
             const existingChatData = await existingChat.json();
             if(!existingChatData){
                 console.log("returned no data");
                 return;
             }
-            // console.log("Data stored is: ", existingChatData);
+            // console.log("Existing Data stored is: ", existingChatData);
+            const newMessages = existingChatData.chat.messages.slice(-3);
+            // console.log("New messages: ", newMessages);
+            // setFullMessage(newMessages);
+            setNewAgentMessages(newMessages);
         }else{
             const newChat = await fetch(`/api/agent/saveData`,{
                 method: 'POST',
@@ -68,7 +73,7 @@ export default function AgentPage({agentId,title,messages=[]}){
                 console.log("returned no data");
                 return;
             }
-            // console.log("Data stored is: ", newChatData);
+            // console.log("New Data stored is: ", newChatData);
             setNewChatId(newChatData._id);
         }
         setIncomingLogs("");

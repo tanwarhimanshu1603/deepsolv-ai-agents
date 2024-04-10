@@ -103,7 +103,7 @@ export default function AgentPage({agentId,title,messages=[]}){
             return newChatMessages;
         })
         // Getting data from Websockets
-        const socket = new WebSocket('ws://127.0.0.1:8000/ws');
+        const socket = new WebSocket('ws://34.42.153.11:8000/ws');
 
         socket.addEventListener('open',(event) => {
             console.log("WebSocket connection established.");

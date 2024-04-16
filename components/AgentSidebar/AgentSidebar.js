@@ -16,6 +16,7 @@ export const AgentSidebar = ({chatId}) => {
             // console.log("Chat list: ",json);
             setChatList(json?.chatgptConversation || []);
         }
+        // console.log("Working");
         loadChatList();
     },[chatId]);
 
@@ -24,7 +25,7 @@ export const AgentSidebar = ({chatId}) => {
         <div className="flex-1 overflow-auto bg-gray-950">
             {
                 chatList.map(chat => (
-                    <Link key={chat._id} href={`/agent/${chat._id}`} className={`side-menu-item ${chatId === chat._id && "bg-gray-700 hover:bg-gray-700"}`}><FontAwesomeIcon icon={faMessage} /> <span title={chat.title} className="overflow-hidden text-ellipsis whitespace-nowrap">{chat.title}</span></Link>
+                    <Link key={chat.id} href={`/agent/${chat.id}`} className={`side-menu-item ${chatId === chat.id && "bg-gray-700 hover:bg-gray-700"}`}><FontAwesomeIcon icon={faMessage} /> <span title={chat.title} className="overflow-hidden text-ellipsis whitespace-nowrap">{chat.title}</span></Link>
                 ))
             }
         </div>

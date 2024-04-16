@@ -1,16 +1,16 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { AgentMessage } from "components/AgentMessage";
 import {AgentSidebar} from "components/AgentSidebar";
-import clientPromise from "lib/mongodb";
+import { doc, getDoc } from "firebase/firestore";
+import db from "lib/firebaseConfig";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react"
 import {v4 as uuid} from 'uuid'
-import {ObjectId} from 'mongodb'
 
 
 export default function AgentPage({agentId,title,messages=[]}){
-
+    // console.log("agentid: ",agentId,title);
     // console.log("Content from id: ", messages);
 
     const [newChatId,setNewChatId] = useState(null);
@@ -27,6 +27,7 @@ export default function AgentPage({agentId,title,messages=[]}){
     useEffect(() => {
         setNewAgentMessages([]);
         setNewChatId(null);
+        // console.log("agentid: ",agentId);
     },[agentId])
 
 
@@ -55,8 +56,10 @@ export default function AgentPage({agentId,title,messages=[]}){
                 console.log("returned no data");
                 return;
             }
-            // console.log("Existing Data stored is: ", existingChatData);
+            // console.log("existing chat data: ",existingChatData);
+            console.log("Existing Data stored is: ", existingChatData);
             const newMessages = existingChatData.chat.messages.slice(-3);
+            // console.log("new messages: ",newMessages); 
             // console.log("New messages: ", newMessages);
             // setFullMessage(newMessages);
             setNewAgentMessages(newMessages);
@@ -174,26 +177,58 @@ export default function AgentPage({agentId,title,messages=[]}){
 }
 
 
+// mongodb
+// export const getServerSideProps = async (context) => {
+//     const agentId = context.params?.agentId?.[0] || null;
+//     // console.log("context: ",agentId);
+//     if(agentId){
+//         const {user} = await getSession(context.req,context.res);
+//         const client = await clientPromise;
+//         const db = client.db();
+//         const collection = await db.collection("DeepAgent").findOne({
+//             userId: user.sub,
+//             _id: new ObjectId(agentId)
+//         })
+//         return {
+//             props: {
+//                 agentId,
+//                 title: collection.title,
+//                 messages: collection.messages || []  // Ensure messages array is not undefined
+//             },
+//         }
+//     }
+//     return {
+//         props: {}
+//     }
+// }
+
+// firestore
 export const getServerSideProps = async (context) => {
     const agentId = context.params?.agentId?.[0] || null;
-    // console.log("context: ",agentId);
+    let collections;
     if(agentId){
         const {user} = await getSession(context.req,context.res);
-        const client = await clientPromise;
-        const db = client.db();
-        const collection = await db.collection("DeepAgent").findOne({
-            userId: user.sub,
-            _id: new ObjectId(agentId)
-        })
+        const chatDocRef = doc(db,"DeepAgent",agentId);
+        try {
+            const chatDoc = await getDoc(chatDocRef);
+
+            if(chatDoc.exists() && chatDoc.data().userId === user.sub){
+                collections = chatDoc.data();
+            }else throw new Error("No chat found or unauthorized user");
+        } catch (error) {
+            console.log("Error in [[...agentId]].js",error);
+            throw new Error("Failed to fetch chat");
+        }
         return {
             props: {
                 agentId,
-                title: collection.title,
-                messages: collection.messages || []  // Ensure messages array is not undefined
+                title: collections.title,
+                messages: collections.messages || []
             },
         }
     }
     return {
         props: {}
     }
+    
 }

@@ -1,13 +1,13 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { ChatSidebar } from "components/ChatSidebar";
 import { ChatMessage } from "components/ChatMessage";
-import clientPromise from "lib/mongodb";
-import { ObjectId } from "mongodb";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { streamReader } from "openai-edge-stream";
 import { useEffect, useState } from "react";
 import {v4 as uuid} from 'uuid'
+import { doc, getDoc } from "firebase/firestore";
+import db from "lib/firebaseConfig";
 
 export default function ChatPage({chatId,title, messages = []}){
     // console.log("title", title, messages);
@@ -122,16 +122,49 @@ export default function ChatPage({chatId,title, messages = []}){
     )
 }
 
+// export const getServerSideProps = async (context) => {
+//     const chatId = context.params?.chatId?.[0] || null;
+//     if(chatId){
+//         const {user} = await getSession(context.req,context.res);
+//         const client = await clientPromise;
+//         const db = client.db();
+//         const chatgptConversation = await db.collection("DeepChat").findOne({
+//             userId: user.sub,
+//             _id: new ObjectId(chatId)
+//         })
+//         return {
+//             props: {
+//                 chatId,
+//                 title: chatgptConversation.title,
+//                 messages: chatgptConversation.messages.map(message => ({
+//                     ...message,
+//                     _id: uuid(),
+//                 }))
+//             },
+//         }
+//     }
+//     return {
+//         props: {}
+//     }
+    
+// }
+
 export const getServerSideProps = async (context) => {
     const chatId = context.params?.chatId?.[0] || null;
+    let chatgptConversation;
     if(chatId){
         const {user} = await getSession(context.req,context.res);
-        const client = await clientPromise;
-        const db = client.db();
-        const chatgptConversation = await db.collection("DeepChat").findOne({
-            userId: user.sub,
-            _id: new ObjectId(chatId)
-        })
+        const chatDocRef = doc(db,"DeepChat",chatId);
+        try {
+            const chatDoc = await getDoc(chatDocRef);
+
+            if(chatDoc.exists() && chatDoc.data().userId === user.sub){
+                chatgptConversation = chatDoc.data();
+            }else throw new Error("No chat found or unauthorized user");
+        } catch (error) {
+            console.log("Error in [[...chatId]].js",error);
+            throw new Error("Failed to fetch chat");
+        }
         return {
             props: {
                 chatId,
@@ -148,3 +181,5 @@ export const getServerSideProps = async (context) => {
     }
     
 }
+
+

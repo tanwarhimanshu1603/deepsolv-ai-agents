@@ -8,6 +8,7 @@ export default async function handler(req){
     try{
         const {chatId: chatIdFromParam,message} = await req.json();
         let chatId = chatIdFromParam;
+        // console.log("Chatid: ",chatId);
         const initialMessage = {
             role: "system",
             content: ""
@@ -29,7 +30,8 @@ export default async function handler(req){
                     content: message
                 })
             })
-            const json = response.json();
+            const json = await response.json();
+            // console.log("json from existing chat endpoint: ",json);
             chatMessages = json?.chatgptConversation?.messages || [];
         }else{
             const response = await fetch(`${req.headers.get("origin")}/api/chat/createNewChat`,{
@@ -78,7 +80,8 @@ export default async function handler(req){
                 //       "content": ""
                 //     }
                 //   ],
-                messages: [initialMessage, {content: message, role: "user"}],
+                // messages: [initialMessage, {content: message, role: "user"}],
+                messages: [initialMessage, ...messagesToInlcude],
                 stream: true
             })
         },{

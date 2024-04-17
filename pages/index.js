@@ -2,7 +2,6 @@ import Head from "next/head";
 import Link from "next/link";
 import {useUser} from '@auth0/nextjs-auth0/client'
 import { getSession } from "@auth0/nextjs-auth0";
-import ThemeSwitcher from "components/ThemeSwitcher";
 import Navbar from "components/Navbar";
 
 export default function Home() {
